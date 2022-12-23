@@ -30,3 +30,8 @@ func (s *service) SortJobsToBash(ctx context.Context, jobs Job) (string, error) 
 	return "", errors.New("not implemented")
 
 }
+
+// jobToTree to convert job to list of strings as edges
+// treeToJov gets list of names as order and orders the job by these names
+// sortJobs to sort the job and return sorted job
+// sortJobsToBash to sort the job and return bash script as string

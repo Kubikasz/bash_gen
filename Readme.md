@@ -12,6 +12,7 @@ go service to generate bash files from json
 
 
 
+
 ## Actors:
 * Go serving instance
 * Handler to convert json to go structs
@@ -37,7 +38,7 @@ go service to generate bash files from json
    
 ## Steps 
 - [x] Generate init project structure 
-- [ ] Provide echo service for json 
+- [x] Provide echo service for json 
 - [ ] Create test for json validation
 - [ ] Create unit tests for service logic 
 - [ ] Setup dockeer
@@ -47,4 +48,4 @@ go service to generate bash files from json
 - [ ] Create integration test for bash 
 - [ ] Submit code
 
-
+Time: 2hrs
