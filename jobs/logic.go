@@ -3,9 +3,9 @@ package jobs
 import (
 	"context"
 	"errors"
-	"fmt"
+
 	"github.com/go-kit/kit/log"
-	"github.com/stevenle/topsort"
+	"github.com/yourbasic/graph"
 )
 
 // create error message from job
@@ -53,47 +53,42 @@ func (s *service) SortJobsToBash(ctx context.Context, jobs Job) (string, error) 
 
 }
 
-// jobToGraphto convert job to list of strings as edges
-func jobToGraphto(job Job) ([]string, error) {
-	// for each task in the job add the task name as node and the dependencies as edges
-	graph := topsort.NewGraph()
-	noDepNodes := []string{}
+// jobToGraph adds id and returns a graph of the jobs
+func jobToGraph(job Job) (j Job, gr *graph.Mutable, e error) {
+	// create a graph
+	g := graph.New(len(job))
+	// add id to each task
+	for i, _ := range job {
+		var id int = i
+		job[i].ID = &id
+	}
+	// add each task to the graph
 	for _, task := range job {
-		graph.AddNode(task.Name)
+		// add task to the graph
 		if task.Requires == nil {
-			// no dependencies
-			noDepNodes = append(noDepNodes, task.Name)
 			continue
 		}
-		for _, dep := range *task.Requires {
-			graph.AddEdge(task.Name, dep)
+		// add each dependency to the graph
+		for _, require := range *task.Requires {
+			for _, r := range job {
+				// find the task id of the dependency
+				if r.Name == require {
+					g.Add(*r.ID, *task.ID)
+				}
+			}
 		}
 	}
-	if len(noDepNodes) == 0 {
-		return nil, ErrCantSolveGraph
-	}
-	// sort the graph
-	sorted, err := graph.TopSort(noDepNodes[0])
-	if err != nil {
-		return nil, err
-	}
-	return sorted, nil
 
+	// add edges to the graph
+	return job, g, nil
 }
 
 // treeToJov gets list of names as order and orders the job by these names
-func treeToJob(sorted []string, job Job) (Job, error) {
-	// for each sorted name find the task and add it to the new job
-	if len(sorted) == 0 {
-		return nil, ErrCantSolveGraph
-	}
+func sortedGraphToJob(sorted []int, job Job) (Job, error) {
 	sortedJob := Job{}
-	for _, name := range sorted {
+	for _, id := range sorted {
 		for _, task := range job {
-			if task.Name == name {
-				// set requires to nil
-				fmt.Println(task.Name)
-				task.Requires = nil
+			if *task.ID == id {
 				sortedJob = append(sortedJob, task)
 			}
 		}
@@ -103,14 +98,19 @@ func treeToJob(sorted []string, job Job) (Job, error) {
 
 // sortJobs to sort the job and return sorted job
 func sortJobs(job Job) (Job, error) {
-	sortedTasks, err := jobToGraphto(job)
+	jobFilled, tasksGraph, err := jobToGraph(job)
 	if err != nil {
 		return nil, err
 	}
-	sortedJob, err := treeToJob(sortedTasks, job)
+	sortedTasks, ok := graph.TopSort(tasksGraph)
+	if ok != true {
+		return nil, ErrCantSolveGraph
+	}
+	sortedJob, err := sortedGraphToJob(sortedTasks, jobFilled)
 	if err != nil {
 		return nil, err
 	}
+
 	return sortedJob, nil
 }
 
