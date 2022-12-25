@@ -33,10 +33,6 @@ func (s *service) SortJobs(ctx context.Context, jobs Job) (Job, error) {
 		logger.Log("err", err)
 		return nil, err
 	}
-	// log all the sorted jobs
-	for _, task := range sortedJobs {
-		logger.Log("task", task.Name)
-	}
 
 	return sortedJobs, nil
 }

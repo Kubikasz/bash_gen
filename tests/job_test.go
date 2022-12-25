@@ -21,28 +21,22 @@ func TestSortJobs(t *testing.T) {
 
 	// setup table test cases good and invalid
 
-	type Tasks struct {
-		Tasks jobs.Job `json:"tasks"`
-	}
-	var tasks Tasks
-	// read json data from testdata/job_good_req.json
-	file, _ := os.Open("testdata/job_good_req.json")
-	defer file.Close()
-	decoder := json.NewDecoder(file)
-	err := decoder.Decode(&tasks)
+	job_ok_req, err := loadJobFromFile("testdata/job_good_req.json", t)
 	if err != nil {
-		t.Errorf("error decoding json: %v", err)
+		t.Fatal(err)
 	}
-	job_ok_req := tasks.Tasks
 
 	job_ok_resp := jobs.Job{}
-	tasks = Tasks{}
-	file, _ = os.Open("testdata/job_goo_resp.json")
+	file, _ := os.Open("testdata/job_goo_resp.json")
 	defer file.Close()
-	decoder = json.NewDecoder(file)
+	decoder := json.NewDecoder(file)
 	err = decoder.Decode(&job_ok_resp)
 	if err != nil {
 		t.Errorf("error decoding json: %v", err)
+	}
+	job_circ_req, err := loadJobFromFile("testdata/job_circular_req.json", t)
+	if err != nil {
+		t.Fatal(err)
 	}
 
 	// job_invalid := jobs.Job{}
@@ -58,6 +52,11 @@ func TestSortJobs(t *testing.T) {
 			job:      job_ok_req,
 			expected: job_ok_resp,
 			err:      nil,
+		},
+		{name: "circular",
+			job:      job_circ_req,
+			expected: nil,
+			err:      jobs.ErrCantSolveGraph,
 		},
 		// {
 		// 	name:     "invalid",
@@ -77,9 +76,6 @@ func TestSortJobs(t *testing.T) {
 					t.Errorf("expected error %v, got %v", tc.err, err)
 				}
 			}
-			if resp == nil {
-				t.Errorf("expected response %v, got %v", tc.expected, resp)
-			}
 			if len(resp) != len(tc.expected) {
 				t.Errorf("expected response with len:  %v, got %v", len(tc.expected), len(resp))
 				return
@@ -92,4 +88,23 @@ func TestSortJobs(t *testing.T) {
 		})
 	}
 
+}
+
+func loadJobFromFile(filename string, t *testing.T) (jobs.Job, error) {
+	type Tasks struct {
+		Tasks jobs.Job `json:"tasks"`
+	}
+	var tasks Tasks
+	// read json data from testdata/job_good_req.json
+	file, err := os.Open(filename)
+	if err != nil {
+		t.Errorf("error opening file: %v", err)
+	}
+	defer file.Close()
+	decoder := json.NewDecoder(file)
+	err = decoder.Decode(&tasks)
+	if err != nil {
+		t.Errorf("error decoding json: %v", err)
+	}
+	return tasks.Tasks, nil
 }
