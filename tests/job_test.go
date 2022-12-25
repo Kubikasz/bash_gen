@@ -35,6 +35,16 @@ func TestSortJobs(t *testing.T) {
 	}
 	job_ok_req := tasks.Tasks
 
+	job_ok_resp := jobs.Job{}
+	tasks = Tasks{}
+	file, _ = os.Open("testdata/job_goo_resp.json")
+	defer file.Close()
+	decoder = json.NewDecoder(file)
+	err = decoder.Decode(&job_ok_resp)
+	if err != nil {
+		t.Errorf("error decoding json: %v", err)
+	}
+
 	// job_invalid := jobs.Job{}
 
 	type test struct {
@@ -46,7 +56,7 @@ func TestSortJobs(t *testing.T) {
 	tests := []test{
 		{name: "ok",
 			job:      job_ok_req,
-			expected: job_ok_req,
+			expected: job_ok_resp,
 			err:      nil,
 		},
 		// {
@@ -70,8 +80,11 @@ func TestSortJobs(t *testing.T) {
 			if resp == nil {
 				t.Errorf("expected response %v, got %v", tc.expected, resp)
 			}
-
-			for i := range resp {
+			if len(resp) != len(tc.expected) {
+				t.Errorf("expected response with len:  %v, got %v", len(tc.expected), len(resp))
+				return
+			}
+			for i := range tc.expected {
 				if resp[i].Name != tc.expected[i].Name {
 					t.Errorf("expected response %v, got %v", tc.expected, resp)
 				}

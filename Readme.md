@@ -21,16 +21,17 @@ go service to generate bash files from json
 
 ## Tasks:
 - [x] Setup server with endpoint `/tasks/sort` 
-   - [ ] Post request json body 
+   - [x] Post request json body 
    - [ ] validate no circluar dependancies 
    - [ ] return json body with sorted commands
-- [ ] Tests with json file as input and json file as output
-  - [ ] Good input
+- [x] Tests with json file as input and json file as output
+  - [x] Good input
   - [ ] Invalid input 
   - [ ] simple Circular dependancies `task1 requires task2, and task2 requires task1 `
   - [ ] self dependencies 
   - [ ] Complex circular dep `t1->t2->t3->t4->t1`
-- [ ] create package for converting tasks to bash 
+  - [ ] All tasks should be with unique name
+- [x] create package for converting tasks to bash 
 - [ ] create test with json input and a .txt file as output
 - [x] create endpoint for bash commands generating `/tasks/gen`
 - [ ] create test for gen endpoint with .txt file as output
@@ -41,11 +42,11 @@ go service to generate bash files from json
 - [x] Provide echo service for json 
 - [ ] Create test for json validation
 - [ ] Create unit tests for service logic 
-- [ ] Setup dockeer
 - [ ] Create bash endpoint 
 - [ ] Create unit test for bash endpoint 
 - [ ] Create integration test for json 
 - [ ] Create integration test for bash 
+- [ ] Setup dockeer
 - [ ] Submit code
 
-Time: 2hrs
+Time: 4hrs
