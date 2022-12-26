@@ -6,8 +6,6 @@ import (
 	"bash_gen/jobs"
 	"context"
 	"encoding/json"
-	"fmt"
-	"io"
 	"os"
 	"testing"
 
@@ -42,7 +40,6 @@ func TestSortJobs(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	fmt.Println(job_circ_req)
 
 	job_invalid, err := loadJobFromFile("testdata/job_invalid_req.json", t)
 	if err != nil {
@@ -107,18 +104,5 @@ func loadJobFromFile(filename string, t *testing.T) (jobs.Job, error) {
 		t.Errorf("error opening file: %v", err)
 	}
 	defer file.Close()
-	return jsonToJob(file)
-}
-
-func jsonToJob(j io.Reader) (jobs.Job, error) {
-	type Tasks struct {
-		Tasks jobs.Job `json:"tasks"`
-	}
-	var tasks Tasks
-	decoder := json.NewDecoder(j)
-	err := decoder.Decode(&tasks)
-	if err != nil {
-		return nil, err
-	}
-	return tasks.Tasks, nil
+	return jobs.JsonToJob(file)
 }

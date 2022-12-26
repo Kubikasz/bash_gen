@@ -123,8 +123,10 @@ func sortJobsToBash(job Job) (string, error) {
 	bashString := ""
 	for _, task := range sortedJobs {
 		// add each Command to the bash with a new line
-		bashString += task.Command + "\n"
+		bashString += task.Command + " && " 
 
 	}
+  // remove the last && from the bash string
+  bashString = bashString[:len(bashString)-4]
 	return bashString, nil
 }
