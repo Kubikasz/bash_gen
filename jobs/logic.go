@@ -10,7 +10,6 @@ import (
 
 // create error message from job
 var ErrInvalidJob = errors.New("invalid job")
-var ErrCycle = errors.New("cycle detected")
 var ErrCantSolveGraph = errors.New("can't solve graph")
 
 type service struct {
@@ -25,10 +24,13 @@ func NewService(repo Repository, logger log.Logger) Service {
 	}
 }
 
-func (s *service) SortJobs(ctx context.Context, jobs Job) (Job, error) {
+func (s *service) SortJobs(ctx context.Context, job Job) (Job, error) {
 	logger := log.With(s.logger, "method", "SortJobs")
 	logger.Log("msg", "sorting jobs")
-	sortedJobs, err := sortJobs(jobs)
+	sortedJobs, err := sortJobs(job)
+	if job.Validate() != nil {
+		return nil, ErrInvalidJob
+	}
 	if err != nil {
 		logger.Log("err", err)
 		return nil, err
@@ -37,10 +39,13 @@ func (s *service) SortJobs(ctx context.Context, jobs Job) (Job, error) {
 	return sortedJobs, nil
 }
 
-func (s *service) SortJobsToBash(ctx context.Context, jobs Job) (string, error) {
+func (s *service) SortJobsToBash(ctx context.Context, job Job) (string, error) {
 	logger := log.With(s.logger, "method", "SortJobsToBash")
 	logger.Log("msg", "sorting jobs to bash")
-	bashString, err := sortJobsToBash(jobs)
+	if job.Validate() != nil {
+		return "", ErrInvalidJob
+	}
+	bashString, err := sortJobsToBash(job)
 	if err != nil {
 		logger.Log("err", err)
 		return "", err
@@ -74,7 +79,6 @@ func jobToGraph(job Job) (j Job, gr *graph.Mutable, e error) {
 			}
 		}
 	}
-
 	// add edges to the graph
 	return job, g, nil
 }

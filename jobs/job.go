@@ -8,7 +8,7 @@ import (
 // Task represents the task to be excuted and its dependencies
 // using pointer to string to be able to avoid when responding
 type Task struct {
-	Name     string    `json:"name" validate:"required|min_len:3" message:"required:{field} is required"`
+	Name     string    `json:"name"`
 	Command  string    `json:"command"`
 	Requires *[]string `json:"requires,omitempty"`
 	ID       *int      `json:"id,omitempty"`
@@ -29,4 +29,25 @@ func (t Task) String() string {
 		id = fmt.Sprintf("%d, ", *t.ID)
 	}
 	return fmt.Sprint("Task: ", t.Name, " Command: ", t.Command, " Requires: ", t.Requires, " ID: ", id)
+}
+
+// add validation to Task
+func (t Task) Validate() error {
+	if t.Name == "" {
+		return fmt.Errorf("name is required")
+	}
+	if t.Command == "" {
+		return fmt.Errorf("command is required")
+	}
+	return nil
+}
+
+// add validation to Job
+func (j Job) Validate() error {
+	for _, task := range j {
+		if err := task.Validate(); err != nil {
+			return err
+		}
+	}
+	return nil
 }
