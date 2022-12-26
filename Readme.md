@@ -45,7 +45,7 @@ go service to generate bash files from json
 - [x] Create integration test for json 
 - [x] Create integration test for bash 
 - [x] Setup workflow
-- [ ] Setup dockeer
+- [x] Setup dockeer
 - [ ] Submit code
 
 Time: 8hrs
