@@ -23,7 +23,7 @@ go service to generate bash files from json
 - [x] Setup server with endpoint `/tasks/sort` 
    - [x] Post request json body 
    - [x] validate no circluar dependancies 
-   - [ ] return json body with sorted commands
+   - [x] return json body with sorted commands
 - [x] Tests with json file as input and json file as output
   - [x] Good input
   - [x] Invalid input 
@@ -41,10 +41,11 @@ go service to generate bash files from json
 - [x] Create unit tests for service logic 
 - [x] Create bash endpoint 
 - [x] Add validation 
-- [ ] Create unit test for bash endpoint 
-- [ ] Create integration test for json 
-- [ ] Create integration test for bash 
+- [x] Create unit test for bash endpoint 
+- [x] Create integration test for json 
+- [x] Create integration test for bash 
+- [x] Setup workflow
 - [ ] Setup dockeer
 - [ ] Submit code
 
-Time: 4hrs
+Time: 8hrs

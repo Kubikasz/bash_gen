@@ -14,13 +14,13 @@ import (
 
 func NewHTTPServer(ctx context.Context, endpoints Endpoints) http.Handler {
 	r := mux.NewRouter()
-	r.Methods("POST").Path("/sort/bash").Handler(httptransport.NewServer(
+	r.Methods("POST").Path("job/sort/bash").Handler(httptransport.NewServer(
 		endpoints.SortJobsToBashEndpoint,
 		decodeSortJobsToBashRequest,
 		encodeBashResponse,
 	))
 	r.Use(commonMiddleware)
-	r.Methods("POST").Path("/sort").Handler(httptransport.NewServer(
+	r.Methods("POST").Path("job/sort").Handler(httptransport.NewServer(
 		endpoints.SortJobsEndpoint,
 		decodeSortJobsRequest,
 		encodeResponse,
