@@ -48,4 +48,4 @@ go service to generate bash files from json
 - [x] Setup dockeer
 - [ ] Submit code
 
-Time: 8hrs
+Time: 11 hrs
