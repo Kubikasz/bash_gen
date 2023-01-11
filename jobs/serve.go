@@ -2,8 +2,8 @@ package jobs
 
 import (
 	"context"
+	"fmt"
 	"net/http"
-  "fmt"
 
 	"encoding/json"
 	"io"
@@ -14,13 +14,13 @@ import (
 
 func NewHTTPServer(ctx context.Context, endpoints Endpoints) http.Handler {
 	r := mux.NewRouter()
-	r.Methods("POST").Path("job/sort/bash").Handler(httptransport.NewServer(
+	r.Methods("POST").Path("/job/sort/bash").Handler(httptransport.NewServer(
 		endpoints.SortJobsToBashEndpoint,
 		decodeSortJobsToBashRequest,
 		encodeBashResponse,
 	))
 	r.Use(commonMiddleware)
-	r.Methods("POST").Path("job/sort").Handler(httptransport.NewServer(
+	r.Methods("POST").Path("/job/sort").Handler(httptransport.NewServer(
 		endpoints.SortJobsEndpoint,
 		decodeSortJobsRequest,
 		encodeResponse,
@@ -28,8 +28,6 @@ func NewHTTPServer(ctx context.Context, endpoints Endpoints) http.Handler {
 
 	return r
 }
-
-
 
 func commonMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -51,12 +49,12 @@ func encodeResponse(_ context.Context, w http.ResponseWriter, response interface
 }
 
 func encodeBashResponse(_ context.Context, w http.ResponseWriter, response interface{}) error {
-  resp, ok := response.(string)
-  if !ok {
-    return fmt.Errorf("response is not a string")
-  }
-  w.Write([]byte(resp))
-  return nil
+	resp, ok := response.(string)
+	if !ok {
+		return fmt.Errorf("response is not a string")
+	}
+	w.Write([]byte(resp))
+	return nil
 }
 
 func JsonToJob(j io.Reader) (Job, error) {
